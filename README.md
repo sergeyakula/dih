@@ -82,10 +82,10 @@ After signing, the dashboard waits for the receipt (`tx.wait()`). It reports suc
 | Transfers | recipient receives the amount, sender is reduced, supply unchanged | ✅ see transfers |
 | Lecturer transfer: Token A | ≥ 1 DIH, confirmed transaction | ✅ 10,000 DIH |
 | Lecturer transfer: Token B | ≥ 1 DN, separate transaction | DN owner |
-| UI balances | correct balances shown in the public UI | _screenshot_ |
-| Successful transfer in UI | "Done" message and updated balance | _screenshot_ |
-| Wrong address | UI rejects before the wallet request | _screenshot_ |
-| Excess amount | UI rejects with clear feedback | _screenshot_ |
+| UI balances | correct balances shown in the public UI | ✅ [screenshot](screenshots/1-balances.jpg) |
+| Successful transfer in UI | "Done" message and updated balance | ✅ [screenshot](screenshots/2-successful-transfer.jpg) |
+| Wrong address | UI rejects before the wallet request | ✅ [screenshot](screenshots/3-invalid-address.jpg) |
+| Excess amount | UI rejects with clear feedback | ✅ [screenshot](screenshots/4-insufficient-balance.jpg) |
 | Wrong chain | transfer blocked, Sepolia requested | _screenshot_ |
 | Zero amount | UI rejects with clear feedback | shown in live demo |
 | MetaMask cancellation | UI does not claim a successful transfer | shown in live demo |
