@@ -152,6 +152,7 @@
     $("acct").textContent = account;
     $("chain").textContent = onSepolia ? "Sepolia ✓" : "Wrong network (chain ID " + net.chainId + ")";
     $("switchBtn").hidden = onSepolia;
+    $("testMainnetBtn").hidden = !(TEST_MODE && onSepolia);
     $("connectBtn").textContent = short(account);
     $("connectBtn").className = "secondary";
     updateSendButton();
@@ -269,6 +270,13 @@
   // ---------- wiring ----------
   $("connectBtn").onclick = connect;
   $("switchBtn").onclick = switchToSepolia;
+  // Test helper for the "wrong chain" check: only visible with ?test=1 in the URL.
+  var TEST_MODE = /[?&]test=1\b/.test(location.search);
+  $("testMainnetBtn").onclick = async function () {
+    try {
+      await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x1" }] });
+    } catch (e) { show("walletMsg", "err", "Could not switch network: " + errText(e)); }
+  };
   $("sendForm").addEventListener("submit", send);
   $("tokenSel").onchange = renderAvail;
   $("lecturerBtn").onclick = function () { $("toAddr").value = CONFIG.lecturer; };
