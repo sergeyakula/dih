@@ -2,7 +2,7 @@
 
 Учебная работа «Create & Transfer Your Tokens» (Group 3, Blockchain Lab). Только тестовая сеть **Ethereum Sepolia** (chain ID 11155111), токены не имеют реальной ценности.
 
-**Дашборд:** https://sergeyakula.github.io/Dih/
+**Дашборд:** https://sergeyakula.github.io/dih/
 
 Дашборд подключает MetaMask, показывает адрес кошелька и балансы двух ERC-20 токенов, проверяет сеть и отправляет выбранный токен на другой адрес.
 
