@@ -3,84 +3,73 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DIH Coin Deploy</title>
+<title>DIH Token Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@600;700&display=swap">
 <style>
-/* Layout: one narrow column of numbered steps, each a plain card; the action is always the widest thing on screen. */
+/* Layout: one narrow column — wallet bar, two token cards side by side, send form, transaction log. */
 :root {
-  --bg: #eceef2;
-  --surface: #ffffff;
-  --fg: #14161b;
-  --muted: #5b6170;
-  --line: #d5d9e1;
-  --accent: #2b45e8;
-  --accent-fg: #ffffff;
-  --ok: #157a3c;
-  --ok-bg: #e3f4e9;
-  --err: #b42318;
-  --err-bg: #fbe9e7;
-  --warn: #8a5a00;
-  --warn-bg: #fff4dc;
+  --bg: #eceef2; --surface: #ffffff; --fg: #14161b; --muted: #5b6170; --line: #d5d9e1;
+  --accent: #2b45e8; --accent-fg: #ffffff;
+  --ok: #157a3c; --ok-bg: #e3f4e9; --err: #b42318; --err-bg: #fbe9e7; --warn: #8a5a00; --warn-bg: #fff4dc;
   --font-display: "Unbounded", "Golos Text", system-ui, sans-serif;
   --font-body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root {
     --bg: #0f1116; --surface: #181b22; --fg: #e8eaf0; --muted: #9aa1b2; --line: #2a2f3a;
     --accent: #8292ff; --accent-fg: #0f1116;
     --ok: #5fd08a; --ok-bg: #12291b; --err: #ff8a7a; --err-bg: #2e1512; --warn: #f2c25b; --warn-bg: #2b2210;
     color-scheme: dark;
   }
 }
-:root[data-theme="dark"] {
-  --bg: #0f1116; --surface: #181b22; --fg: #e8eaf0; --muted: #9aa1b2; --line: #2a2f3a;
-  --accent: #8292ff; --accent-fg: #0f1116;
-  --ok: #5fd08a; --ok-bg: #12291b; --err: #ff8a7a; --err-bg: #2e1512; --warn: #f2c25b; --warn-bg: #2b2210;
-  color-scheme: dark;
-}
 * { box-sizing: border-box; }
 body {
-  background: var(--bg); color: var(--fg);
+  margin: 0; background: var(--bg); color: var(--fg);
   font-family: var(--font-body); font-size: 16px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 20px 40px;
+  padding-block: max(20px, env(safe-area-inset-top, 0px)) 40px;
 }
-.wrap { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-header { display: flex; flex-direction: column; gap: 10px; padding-block: 4px 8px; }
-h1 { font-family: var(--font-display); font-size: 1.9rem; line-height: 1.1; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
-.spec { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-family: var(--font-mono); font-size: 0.78rem; padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--surface); }
-.chip b { color: var(--fg); font-weight: 500; }
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; }
+h1 { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.15; margin: 0; }
+.net { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+h2 { font-size: 1.02rem; font-weight: 600; margin: 0; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.card.locked { opacity: 0.55; }
-.step-head { display: flex; align-items: baseline; gap: 10px; }
-.num { font-family: var(--font-display); font-size: 0.85rem; color: var(--accent); min-width: 1.4em; }
-h2 { font-size: 1.05rem; font-weight: 600; margin: 0; }
-p { margin: 0; color: var(--muted); font-size: 0.93rem; }
 button {
-  font: inherit; font-weight: 600; font-size: 1rem; cursor: pointer;
-  border-radius: 10px; padding: 13px 16px; border: 1px solid transparent; width: 100%;
-  background: var(--accent); color: var(--accent-fg);
+  font: inherit; font-weight: 600; cursor: pointer; border-radius: 10px; padding: 12px 16px;
+  border: 1px solid transparent; background: var(--accent); color: var(--accent-fg);
 }
 button.secondary { background: transparent; color: var(--fg); border-color: var(--line); font-weight: 500; }
-button.small { width: auto; padding: 6px 10px; font-size: 0.82rem; }
+button.small { padding: 6px 10px; font-size: 0.8rem; }
+button.wide { width: 100%; }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-label { font-size: 0.82rem; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: 0.02em; }
-input {
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wallet { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 0.9rem; }
+.wallet dt { color: var(--muted); }
+.wallet dd { margin: 0; font-family: var(--font-mono); font-size: 0.8rem; word-break: break-all; min-width: 0; }
+.tokens { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.token { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.token .sym { font-family: var(--font-display); font-size: 0.85rem; color: var(--accent); letter-spacing: 0.02em; }
+.token .name { font-size: 0.9rem; color: var(--muted); }
+.token .bal { font-family: var(--font-display); font-size: 1.45rem; font-variant-numeric: tabular-nums; word-break: break-all; }
+.token .meta { font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.token .addr { font-family: var(--font-mono); font-size: 0.72rem; word-break: break-all; color: var(--muted); }
+.token .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; font-size: 0.82rem; }
+label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: 0.02em; }
+input, select {
   font: inherit; width: 100%; padding: 11px 12px; border-radius: 10px;
   border: 1px solid var(--line); background: var(--bg); color: var(--fg);
 }
 input.mono { font-family: var(--font-mono); font-size: 0.85rem; }
-.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 0.9rem; }
-.kv dt { color: var(--muted); }
-.kv dd { margin: 0; font-family: var(--font-mono); font-size: 0.82rem; word-break: break-all; min-width: 0; font-variant-numeric: tabular-nums; }
-.addr { font-family: var(--font-mono); font-size: 0.82rem; word-break: break-all; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 420px) { .row2 { grid-template-columns: 1fr; } }
+.hint { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+.linkish { background: none; border: none; color: var(--accent); padding: 0; font-weight: 500; font-size: 0.78rem; cursor: pointer; text-decoration: underline; }
 .msg { font-size: 0.9rem; padding: 10px 12px; border-radius: 10px; word-break: break-word; }
 .msg a { color: inherit; }
 .msg.ok { background: var(--ok-bg); color: var(--ok); }
@@ -88,341 +77,77 @@ input.mono { font-family: var(--font-mono); font-size: 0.85rem; }
 .msg.warn { background: var(--warn-bg); color: var(--warn); }
 .msg.info { background: var(--bg); color: var(--fg); }
 a { color: var(--accent); }
-.balance { font-family: var(--font-display); font-size: 1.4rem; font-variant-numeric: tabular-nums; }
-.hist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.hist li { font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; }
-.hist a { font-family: var(--font-mono); font-size: 0.78rem; word-break: break-all; }
-details summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; }
-pre { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.78rem; margin: 10px 0 0; }
-.foot { font-size: 0.8rem; color: var(--muted); text-align: center; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.log li { font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 8px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.log a { font-family: var(--font-mono); font-size: 0.74rem; word-break: break-all; }
+.log .st-ok { color: var(--ok); } .log .st-err { color: var(--err); }
+.foot { font-size: 0.78rem; color: var(--muted); text-align: center; }
 </style>
-
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>DIH Coin</h1>
-    <div class="spec">
-      <span class="chip">символ <b>DIH</b></span>
-      <span class="chip">выпуск <b>1 000 000</b></span>
-      <span class="chip">decimals <b>18</b></span>
-      <span class="chip">сеть <b>Sepolia · 11155111</b></span>
+    <div>
+      <h1>DIH Token Dashboard</h1>
+      <div class="net">Ethereum Sepolia · chain ID 11155111</div>
     </div>
+    <button id="connectBtn">Подключить кошелёк</button>
   </header>
 
-  <div id="noWallet" class="msg warn" hidden>
-    Кошелёк не найден. Откройте эту страницу во встроенном браузере MetaMask: «Обзор» → вставьте адрес страницы.
+  <div id="netWarn" class="msg warn">
+    Только тестовая сеть Sepolia. Не используйте кошелёк с реальными средствами и никогда не вводите seed-фразу на сайтах.
   </div>
 
-  <section class="card" id="s1">
-    <div class="step-head"><span class="num">1</span><h2>Подключить кошелёк</h2></div>
-    <button id="connectBtn">Подключить MetaMask</button>
-    <dl class="kv" id="acctInfo" hidden>
-      <dt>Аккаунт</dt><dd id="acct">—</dd>
+  <section class="card" id="walletCard" hidden>
+    <h2>Кошелёк</h2>
+    <dl class="wallet">
+      <dt>Адрес</dt><dd id="acct">—</dd>
       <dt>Сеть</dt><dd id="chain">—</dd>
       <dt>SepoliaETH</dt><dd id="ethBal">—</dd>
     </dl>
-    <button id="switchBtn" class="secondary" hidden>Переключить на Sepolia</button>
-    <div id="m1" class="msg" hidden></div>
+    <button id="switchBtn" class="secondary wide" hidden>Переключить на Sepolia</button>
   </section>
+  <div id="walletMsg" class="msg" hidden></div>
 
-  <section class="card locked" id="s2">
-    <div class="step-head"><span class="num">2</span><h2>Создать токен DIH</h2></div>
-    <p>Один раз отправляет контракт в сеть. Весь выпуск, 1 000 000 DIH, придёт на ваш аккаунт. Комиссия примерно 0.001–0.01 SepoliaETH.</p>
-    <button id="deployBtn" disabled>Задеплоить DIH Coin</button>
-    <div id="m2" class="msg" hidden></div>
-    <div id="tokenBox" hidden>
-      <label>Адрес контракта DIH</label>
-      <div class="addr" id="tokenAddr"></div>
-      <div class="row" style="margin-top:8px">
-        <button class="secondary small" id="copyToken">Скопировать</button>
-        <button class="secondary small" id="watchBtn">Добавить DIH в MetaMask</button>
-        <a id="tokenLink" target="_blank" rel="noopener">Etherscan ↗</a>
+  <section class="tokens" id="tokens" aria-label="Балансы токенов"></section>
+
+  <section class="card">
+    <h2>Отправить токены</h2>
+    <form id="sendForm" novalidate>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="row2">
+          <div>
+            <label for="tokenSel">Токен</label>
+            <select id="tokenSel"></select>
+          </div>
+          <div>
+            <label for="amount">Количество</label>
+            <input id="amount" inputmode="decimal" placeholder="например 1 или 0.5" autocomplete="off">
+            <div class="hint">Доступно: <span id="avail">—</span> · <button type="button" class="linkish" id="maxBtn">всё</button></div>
+          </div>
+        </div>
+        <div>
+          <label for="toAddr">Адрес получателя</label>
+          <input id="toAddr" class="mono" placeholder="0x…" autocomplete="off" spellcheck="false">
+          <div class="hint">Адрес кошелька одногруппника. <button type="button" class="linkish" id="lecturerBtn">Вставить адрес преподавателя</button></div>
+        </div>
+        <button type="submit" id="sendBtn" class="wide" disabled>Отправить</button>
       </div>
-    </div>
-    <details>
-      <summary>Уже задеплоили? Вставьте адрес контракта</summary>
-      <div class="row" style="margin-top:10px">
-        <input id="manualAddr" class="mono" placeholder="0x…" autocomplete="off" spellcheck="false">
-        <button class="secondary" id="useManual">Использовать этот адрес</button>
-      </div>
-    </details>
-  </section>
-
-  <section class="card locked" id="s3">
-    <div class="step-head"><span class="num">3</span><h2>Отправить DIH</h2></div>
-    <div>
-      <label>Ваш баланс</label>
-      <div class="balance" id="dihBal">—</div>
-    </div>
-    <div>
-      <label for="toAddr">Кому</label>
-      <input id="toAddr" class="mono" value="0x5f3046bD5aA3c6d4575AF09B8198d584f130708E" autocomplete="off" spellcheck="false">
-      <p style="margin-top:4px;font-size:0.8rem">Сейчас подставлен кошелёк преподавателя из задания.</p>
-    </div>
-    <div>
-      <label for="amount">Сколько DIH</label>
-      <input id="amount" inputmode="decimal" value="1" autocomplete="off">
-    </div>
-    <button id="sendBtn" disabled>Отправить</button>
-    <div id="m3" class="msg" hidden></div>
-  </section>
-
-  <section class="card" id="s4">
-    <div class="step-head"><span class="num">4</span><h2>Ссылки для отчёта</h2></div>
-    <p>Транзакции с этого устройства. Ссылки нужны для README и показа преподавателю.</p>
-    <ul class="hist" id="hist"><li><span>Пока пусто: здесь появятся деплой и переводы.</span></li></ul>
+    </form>
+    <div id="sendMsg" class="msg" hidden></div>
   </section>
 
   <section class="card">
-    <details>
-      <summary>Код контракта (DIHCoin.sol)</summary>
-<pre>// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.27;
-
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
-contract DIHCoin is ERC20 {
-    constructor() ERC20("DIH Coin", "DIH") {
-        _mint(msg.sender, 1000000 * 10 ** decimals());
-    }
-}</pre>
-      <p style="margin-top:8px;font-size:0.82rem">Скомпилировано solc 0.8.27, OpenZeppelin Contracts 5.1.0, оптимизатор 200 runs, EVM shanghai.</p>
-    </details>
+    <h2>Транзакции с этого устройства</h2>
+    <ul class="log" id="log"><li><span>Пока пусто. Здесь появятся отправленные переводы со ссылками на Etherscan.</span></li></ul>
   </section>
 
-  <p class="foot">Только тестовая сеть Sepolia. Страница никогда не спрашивает seed-фразу или ключ.</p>
+  <p class="foot">
+    Код: <a href="https://github.com/sergeyakula/Dih" target="_blank" rel="noopener">github.com/sergeyakula/Dih</a> · ethers.js v6 · балансы читаются напрямую из блокчейна.
+  </p>
 </div>
 
-<script>
-(function () {
-  "use strict";
-  var BYTECODE = "0x608060405234801561000f575f5ffd5b50604051806040016040528060088152602001672224a41021b7b4b760c11b8152506040518060400160405280600381526020016208892960eb1b815250816003908161005c91906102a0565b50600461006982826102a0565b50505061009b3361007e6100a060201b60201c565b61008990600a610453565b61009690620f4240610468565b6100a5565b610492565b601290565b6001600160a01b0382166100d35760405163ec442f0560e01b81525f60048201526024015b60405180910390fd5b6100de5f83836100e2565b5050565b6001600160a01b03831661010c578060025f828254610101919061047f565b9091555061017c9050565b6001600160a01b0383165f908152602081905260409020548181101561015e5760405163391434e360e21b81526001600160a01b038516600482015260248101829052604481018390526064016100ca565b6001600160a01b0384165f9081526020819052604090209082900390555b6001600160a01b038216610198576002805482900390556101b6565b6001600160a01b0382165f9081526020819052604090208054820190555b816001600160a01b0316836001600160a01b03167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef836040516101fb91815260200190565b60405180910390a3505050565b634e487b7160e01b5f52604160045260245ffd5b600181811c9082168061023057607f821691505b60208210810361024e57634e487b7160e01b5f52602260045260245ffd5b50919050565b601f82111561029b57805f5260205f20601f840160051c810160208510156102795750805b601f840160051c820191505b81811015610298575f8155600101610285565b50505b505050565b81516001600160401b038111156102b9576102b9610208565b6102cd816102c7845461021c565b84610254565b6020601f8211600181146102ff575f83156102e85750848201515b5f19600385901b1c1916600184901b178455610298565b5f84815260208120601f198516915b8281101561032e578785015182556020948501946001909201910161030e565b508482101561034b57868401515f19600387901b60f8161c191681555b50505050600190811b01905550565b634e487b7160e01b5f52601160045260245ffd5b6001815b60018411156103a95780850481111561038d5761038d61035a565b600184161561039b57908102905b60019390931c928002610372565b935093915050565b5f826103bf5750600161044d565b816103cb57505f61044d565b81600181146103e157600281146103eb57610407565b600191505061044d565b60ff8411156103fc576103fc61035a565b50506001821b61044d565b5060208310610133831016604e8410600b841016171561042a575081810a61044d565b6104365f19848461036e565b805f19048211156104495761044961035a565b0290505b92915050565b5f61046160ff8416836103b1565b9392505050565b808202811582820484141761044d5761044d61035a565b8082018082111561044d5761044d61035a565b6106f98061049f5f395ff3fe608060405234801561000f575f5ffd5b5060043610610090575f3560e01c8063313ce56711610063578063313ce567146100fa57806370a082311461010957806395d89b4114610131578063a9059cbb14610139578063dd62ed3e1461014c575f5ffd5b806306fdde0314610094578063095ea7b3146100b257806318160ddd146100d557806323b872dd146100e7575b5f5ffd5b61009c610184565b6040516100a99190610553565b60405180910390f35b6100c56100c03660046105b9565b610214565b60405190151581526020016100a9565b6002545b6040519081526020016100a9565b6100c56100f53660046105e1565b61022d565b604051601281526020016100a9565b6100d961011736600461061b565b6001600160a01b03165f9081526020819052604090205490565b61009c610250565b6100c56101473660046105b9565b61025f565b6100d961015a36600461063b565b6001600160a01b039182165f90815260016020908152604080832093909416825291909152205490565b6060600380546101939061066c565b80601f01602080910402602001604051908101604052809291908181526020018280546101bf9061066c565b801561020a5780601f106101e15761010080835404028352916020019161020a565b820191905f5260205f20905b8154815290600101906020018083116101ed57829003601f168201915b5050505050905090565b5f3361022181858561026c565b60019150505b92915050565b5f3361023a85828561027e565b6102458585856102fe565b506001949350505050565b6060600480546101939061066c565b5f336102218185856102fe565b610279838383600161035b565b505050565b6001600160a01b038381165f908152600160209081526040808320938616835292905220545f1981146102f857818110156102ea57604051637dc7a0d960e11b81526001600160a01b038416600482015260248101829052604481018390526064015b60405180910390fd5b6102f884848484035f61035b565b50505050565b6001600160a01b03831661032757604051634b637e8f60e11b81525f60048201526024016102e1565b6001600160a01b0382166103505760405163ec442f0560e01b81525f60048201526024016102e1565b61027983838361042d565b6001600160a01b0384166103845760405163e602df0560e01b81525f60048201526024016102e1565b6001600160a01b0383166103ad57604051634a1406b160e11b81525f60048201526024016102e1565b6001600160a01b038085165f90815260016020908152604080832093871683529290522082905580156102f857826001600160a01b0316846001600160a01b03167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b9258460405161041f91815260200190565b60405180910390a350505050565b6001600160a01b038316610457578060025f82825461044c91906106a4565b909155506104c79050565b6001600160a01b0383165f90815260208190526040902054818110156104a95760405163391434e360e21b81526001600160a01b038516600482015260248101829052604481018390526064016102e1565b6001600160a01b0384165f9081526020819052604090209082900390555b6001600160a01b0382166104e357600280548290039055610501565b6001600160a01b0382165f9081526020819052604090208054820190555b816001600160a01b0316836001600160a01b03167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef8360405161054691815260200190565b60405180910390a3505050565b602081525f82518060208401525f5b8181101561057f5760208186018101516040868401015201610562565b505f604082850101526040601f19601f83011684010191505092915050565b80356001600160a01b03811681146105b4575f5ffd5b919050565b5f5f604083850312156105ca575f5ffd5b6105d38361059e565b946020939093013593505050565b5f5f5f606084860312156105f3575f5ffd5b6105fc8461059e565b925061060a6020850161059e565b929592945050506040919091013590565b5f6020828403121561062b575f5ffd5b6106348261059e565b9392505050565b5f5f6040838503121561064c575f5ffd5b6106558361059e565b91506106636020840161059e565b90509250929050565b600181811c9082168061068057607f821691505b60208210810361069e57634e487b7160e01b5f52602260045260245ffd5b50919050565b8082018082111561022757634e487b7160e01b5f52601160045260245ffdfea264697066735822122096702f4dffe23cede374a051334cf54cca80ed83cc656fb449f901b6d7f1771c64736f6c634300081b0033";
-  var SEPOLIA = "0xaa36a7";
-  var SCAN = "https://sepolia.etherscan.io";
-  var DECIMALS = 18;
-
-  var eth = null, account = null, chainId = null, token = null, dihRaw = null;
-  var $ = function (id) { return document.getElementById(id); };
-
-  function store(k, v) { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
-  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
-
-  function show(id, kind, html) {
-    var el = $(id);
-    if (!html) { el.hidden = true; return; }
-    el.className = "msg " + kind; el.innerHTML = html; el.hidden = false;
-  }
-  function short(a) { return a.slice(0, 6) + "…" + a.slice(-4); }
-  function isAddr(a) { return /^0x[0-9a-fA-F]{40}$/.test(a); }
-  function pad(hex) { return hex.replace(/^0x/, "").toLowerCase().padStart(64, "0"); }
-
-  function fmt(raw) {
-    var base = 10n ** BigInt(DECIMALS);
-    var whole = raw / base, frac = raw % base;
-    var w = whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    if (frac === 0n) return w;
-    var f = frac.toString().padStart(DECIMALS, "0").replace(/0+$/, "").slice(0, 6);
-    return f ? w + "," + f : w;
-  }
-  function parseAmount(s) {
-    s = String(s).trim().replace(",", ".");
-    if (!/^\d+(\.\d+)?$/.test(s)) return null;
-    var parts = s.split(".");
-    var frac = (parts[1] || "");
-    if (frac.length > DECIMALS) return null;
-    return BigInt(parts[0]) * 10n ** BigInt(DECIMALS) + BigInt(frac.padEnd(DECIMALS, "0") || "0");
-  }
-  function errText(e) {
-    if (!e) return "Неизвестная ошибка.";
-    if (e.code === 4001 || /reject|denied|cancel/i.test(e.message || "")) return "Вы отменили транзакцию в MetaMask. Ничего не отправлено.";
-    if (/insufficient funds/i.test(e.message || "")) return "Не хватает SepoliaETH на комиссию. Пополните кошелёк через кран.";
-    return (e.message || String(e)).slice(0, 300);
-  }
-
-  // ---- history ----
-  function hist() { try { return JSON.parse(load("dih_hist") || "[]"); } catch (e) { return []; } }
-  function addHist(item) { var h = hist(); h.unshift(item); store("dih_hist", JSON.stringify(h.slice(0, 30))); renderHist(); }
-  function renderHist() {
-    var h = hist(), ul = $("hist");
-    if (!h.length) return;
-    ul.innerHTML = "";
-    h.forEach(function (it) {
-      var li = document.createElement("li");
-      var t = document.createElement("span"); t.textContent = it.label; li.appendChild(t);
-      var a = document.createElement("a"); a.href = SCAN + "/tx/" + it.hash; a.target = "_blank"; a.rel = "noopener";
-      a.textContent = SCAN.replace("https://", "") + "/tx/" + it.hash; li.appendChild(a);
-      ul.appendChild(li);
-    });
-  }
-
-  // ---- wallet ----
-  function findProvider() {
-    if (window.ethereum) return Promise.resolve(window.ethereum);
-    return new Promise(function (res) {
-      var done = false;
-      function fin(p) { if (!done) { done = true; res(p || null); } }
-      window.addEventListener("eip6963:announceProvider", function (e) { fin(e.detail && e.detail.provider); });
-      window.addEventListener("ethereum#initialized", function () { fin(window.ethereum); }, { once: true });
-      try { window.dispatchEvent(new Event("eip6963:requestProvider")); } catch (e) {}
-      setTimeout(function () { fin(window.ethereum); }, 3000);
-    });
-  }
-
-  async function refresh() {
-    if (!eth || !account) return;
-    chainId = await eth.request({ method: "eth_chainId" });
-    var onSepolia = chainId === SEPOLIA;
-    $("acctInfo").hidden = false;
-    $("acct").textContent = account;
-    $("chain").textContent = onSepolia ? "Sepolia ✓" : "не Sepolia (" + parseInt(chainId, 16) + ")";
-    $("switchBtn").hidden = onSepolia;
-    $("connectBtn").textContent = "Подключено: " + short(account);
-    $("connectBtn").className = "secondary";
-    if (onSepolia) {
-      var wei = BigInt(await eth.request({ method: "eth_getBalance", params: [account, "latest"] }));
-      $("ethBal").textContent = fmt(wei);
-      show("m1", "", "");
-    } else {
-      $("ethBal").textContent = "—";
-      show("m1", "warn", "Выбрана не та сеть. Нажмите «Переключить на Sepolia».");
-    }
-    $("s2").classList.toggle("locked", !onSepolia);
-    $("deployBtn").disabled = !onSepolia;
-    var ready = onSepolia && !!token;
-    $("s3").classList.toggle("locked", !ready);
-    $("sendBtn").disabled = !ready;
-    if (ready) await refreshDih(); else $("dihBal").textContent = "—";
-  }
-
-  async function refreshDih() {
-    var raw = await eth.request({ method: "eth_call", params: [{ to: token, data: "0x70a08231" + pad(account) }, "latest"] });
-    dihRaw = BigInt(raw && raw !== "0x" ? raw : "0x0");
-    $("dihBal").textContent = fmt(dihRaw) + " DIH";
-  }
-
-  async function ensureSepolia() {
-    var c = await eth.request({ method: "eth_chainId" });
-    if (c === SEPOLIA) return true;
-    try {
-      await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: SEPOLIA }] });
-      return true;
-    } catch (e) { show("m1", "err", "Не удалось переключить сеть: " + errText(e)); return false; }
-  }
-
-  async function waitReceipt(hash) {
-    for (var i = 0; i < 90; i++) {
-      var r = await eth.request({ method: "eth_getTransactionReceipt", params: [hash] });
-      if (r) return r;
-      await new Promise(function (s) { setTimeout(s, 3000); });
-    }
-    throw new Error("Транзакция ещё не подтверждена. Проверьте её по ссылке на Etherscan.");
-  }
-
-  function setToken(addr) {
-    token = addr;
-    store("dih_token", addr);
-    $("tokenBox").hidden = false;
-    $("tokenAddr").textContent = addr;
-    $("tokenLink").href = SCAN + "/token/" + addr;
-  }
-
-  // ---- actions ----
-  $("connectBtn").onclick = async function () {
-    if (!eth) eth = await findProvider();
-    if (!eth) { $("noWallet").hidden = false; return; }
-    try {
-      var acc = await eth.request({ method: "eth_requestAccounts" });
-      account = acc[0];
-      if (eth.on) {
-        eth.on("accountsChanged", function (a) { account = a[0] || null; refresh(); });
-        eth.on("chainChanged", function () { refresh(); });
-      }
-      await refresh();
-    } catch (e) { show("m1", "err", errText(e)); }
-  };
-
-  $("switchBtn").onclick = async function () { if (await ensureSepolia()) refresh(); };
-
-  $("deployBtn").onclick = async function () {
-    var btn = this;
-    if (!(await ensureSepolia())) return;
-    btn.disabled = true;
-    show("m2", "info", "Подтвердите транзакцию в MetaMask…");
-    try {
-      var hash = await eth.request({ method: "eth_sendTransaction", params: [{ from: account, data: BYTECODE }] });
-      show("m2", "info", "Отправлено, ждём подтверждения (обычно 10–30 секунд). <a href='" + SCAN + "/tx/" + hash + "' target='_blank' rel='noopener'>Транзакция ↗</a>");
-      var r = await waitReceipt(hash);
-      if (r.status !== "0x1") throw new Error("Транзакция не прошла (status 0). Посмотрите детали на Etherscan.");
-      setToken(r.contractAddress);
-      addHist({ label: "Деплой DIH Coin → " + r.contractAddress, hash: hash });
-      show("m2", "ok", "Готово! Токен создан. Сохраните адрес контракта ниже.");
-      await refresh();
-    } catch (e) {
-      show("m2", "err", errText(e));
-    } finally { btn.disabled = chainId !== SEPOLIA; }
-  };
-
-  $("useManual").onclick = async function () {
-    var a = $("manualAddr").value.trim();
-    if (!isAddr(a)) { show("m2", "err", "Это не похоже на адрес контракта: нужен 0x и 40 символов."); return; }
-    setToken(a);
-    show("m2", "ok", "Адрес контракта сохранён.");
-    if (account) { try { await refresh(); } catch (e) { show("m2", "err", "Не удалось прочитать баланс: проверьте, что это адрес контракта DIH в Sepolia."); } }
-  };
-
-  $("copyToken").onclick = function () {
-    var t = $("tokenAddr").textContent, btn = this;
-    var sel = function () { var r = document.createRange(); r.selectNodeContents($("tokenAddr")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); };
-    try {
-      navigator.clipboard.writeText(t).then(function () { btn.textContent = "Скопировано"; setTimeout(function () { btn.textContent = "Скопировать"; }, 1500); }, sel);
-    } catch (e) { sel(); }
-  };
-
-  $("watchBtn").onclick = async function () {
-    if (!eth || !token) return;
-    try {
-      await eth.request({ method: "wallet_watchAsset", params: { type: "ERC20", options: { address: token, symbol: "DIH", decimals: DECIMALS } } });
-    } catch (e) { show("m2", "err", errText(e)); }
-  };
-
-  $("sendBtn").onclick = async function () {
-    var btn = this;
-    var to = $("toAddr").value.trim();
-    var amt = parseAmount($("amount").value);
-    if (!isAddr(to)) { show("m3", "err", "Неверный адрес получателя: нужен 0x и 40 символов."); return; }
-    if (to.toLowerCase() === account.toLowerCase()) { show("m3", "err", "Это ваш собственный адрес. Укажите другой кошелёк."); return; }
-    if (amt === null || amt <= 0n) { show("m3", "err", "Введите сумму больше нуля, например 1 или 0.5."); return; }
-    if (dihRaw !== null && amt > dihRaw) { show("m3", "err", "Не хватает DIH: на балансе " + fmt(dihRaw) + "."); return; }
-    if (!(await ensureSepolia())) return;
-    btn.disabled = true;
-    show("m3", "info", "Подтвердите перевод в MetaMask…");
-    try {
-      var data = "0xa9059cbb" + pad(to) + amt.toString(16).padStart(64, "0");
-      var hash = await eth.request({ method: "eth_sendTransaction", params: [{ from: account, to: token, data: data }] });
-      show("m3", "info", "Отправлено, ждём подтверждения… <a href='" + SCAN + "/tx/" + hash + "' target='_blank' rel='noopener'>Транзакция ↗</a>");
-      var r = await waitReceipt(hash);
-      if (r.status !== "0x1") throw new Error("Перевод не прошёл (status 0). Посмотрите детали на Etherscan.");
-      addHist({ label: "Перевод " + fmt(amt) + " DIH → " + short(to), hash: hash });
-      show("m3", "ok", "Перевод подтверждён: " + fmt(amt) + " DIH → " + short(to) + ". <a href='" + SCAN + "/tx/" + hash + "' target='_blank' rel='noopener'>Etherscan ↗</a>");
-      await refreshDih();
-    } catch (e) {
-      show("m3", "err", errText(e));
-    } finally { btn.disabled = false; }
-  };
-
-  // ---- restore ----
-  var saved = load("dih_token");
-  if (saved && isAddr(saved)) setToken(saved);
-  renderHist();
-  findProvider().then(function (p) {
-    eth = p;
-    if (!p) { $("noWallet").hidden = false; return; }
-    p.request({ method: "eth_accounts" }).then(function (a) { if (a && a[0]) $("connectBtn").click(); }).catch(function () {});
-  });
-})();
-</script>
-
+<script src="vendor/ethers-6.13.4.umd.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
