@@ -86,7 +86,7 @@ After signing, the dashboard waits for the receipt (`tx.wait()`). It reports suc
 | Successful transfer in UI | "Done" message and updated balance | ✅ [screenshot](screenshots/2-successful-transfer.jpg) |
 | Wrong address | UI rejects before the wallet request | ✅ [screenshot](screenshots/3-invalid-address.jpg) |
 | Excess amount | UI rejects with clear feedback | ✅ [screenshot](screenshots/4-insufficient-balance.jpg) |
-| Wrong chain | transfer blocked, Sepolia requested | _screenshot_ |
+| Wrong chain | transfer blocked, Sepolia requested | ✅ [screenshot](screenshots/5-wrong-network.jpg) |
 | Zero amount | UI rejects with clear feedback | shown in live demo |
 | MetaMask cancellation | UI does not claim a successful transfer | shown in live demo |
 | Second wallet | correct balances for a different wallet | shown in live demo |
