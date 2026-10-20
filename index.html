@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -91,59 +91,59 @@ a { color: var(--accent); }
       <h1>DIH Token Dashboard</h1>
       <div class="net">Ethereum Sepolia · chain ID 11155111</div>
     </div>
-    <button id="connectBtn">Подключить кошелёк</button>
+    <button id="connectBtn">Connect wallet</button>
   </header>
 
   <div id="netWarn" class="msg warn">
-    Только тестовая сеть Sepolia. Не используйте кошелёк с реальными средствами и никогда не вводите seed-фразу на сайтах.
+    Sepolia testnet only. Use a dedicated test wallet and never enter your seed phrase on any website.
   </div>
 
   <section class="card" id="walletCard" hidden>
-    <h2>Кошелёк</h2>
+    <h2>Wallet</h2>
     <dl class="wallet">
-      <dt>Адрес</dt><dd id="acct">—</dd>
-      <dt>Сеть</dt><dd id="chain">—</dd>
+      <dt>Address</dt><dd id="acct">—</dd>
+      <dt>Network</dt><dd id="chain">—</dd>
       <dt>SepoliaETH</dt><dd id="ethBal">—</dd>
     </dl>
-    <button id="switchBtn" class="secondary wide" hidden>Переключить на Sepolia</button>
+    <button id="switchBtn" class="secondary wide" hidden>Switch to Sepolia</button>
   </section>
   <div id="walletMsg" class="msg" hidden></div>
 
-  <section class="tokens" id="tokens" aria-label="Балансы токенов"></section>
+  <section class="tokens" id="tokens" aria-label="Token balances"></section>
 
   <section class="card">
-    <h2>Отправить токены</h2>
+    <h2>Send tokens</h2>
     <form id="sendForm" novalidate>
       <div style="display:flex;flex-direction:column;gap:12px">
         <div class="row2">
           <div>
-            <label for="tokenSel">Токен</label>
+            <label for="tokenSel">Token</label>
             <select id="tokenSel"></select>
           </div>
           <div>
-            <label for="amount">Количество</label>
-            <input id="amount" inputmode="decimal" placeholder="например 1 или 0.5" autocomplete="off">
-            <div class="hint">Доступно: <span id="avail">—</span> · <button type="button" class="linkish" id="maxBtn">всё</button></div>
+            <label for="amount">Amount</label>
+            <input id="amount" inputmode="decimal" placeholder="e.g. 1 or 0.5" autocomplete="off">
+            <div class="hint">Available: <span id="avail">—</span> · <button type="button" class="linkish" id="maxBtn">max</button></div>
           </div>
         </div>
         <div>
-          <label for="toAddr">Адрес получателя</label>
+          <label for="toAddr">Recipient address</label>
           <input id="toAddr" class="mono" placeholder="0x…" autocomplete="off" spellcheck="false">
-          <div class="hint">Адрес кошелька одногруппника. <button type="button" class="linkish" id="lecturerBtn">Вставить адрес преподавателя</button></div>
+          <div class="hint">A classmate's wallet address. <button type="button" class="linkish" id="lecturerBtn">Use lecturer's address</button></div>
         </div>
-        <button type="submit" id="sendBtn" class="wide" disabled>Отправить</button>
+        <button type="submit" id="sendBtn" class="wide" disabled>Send</button>
       </div>
     </form>
     <div id="sendMsg" class="msg" hidden></div>
   </section>
 
   <section class="card">
-    <h2>Транзакции с этого устройства</h2>
-    <ul class="log" id="log"><li><span>Пока пусто. Здесь появятся отправленные переводы со ссылками на Etherscan.</span></li></ul>
+    <h2>Transactions from this device</h2>
+    <ul class="log" id="log"><li><span>Nothing yet. Transfers you send will appear here with Etherscan links.</span></li></ul>
   </section>
 
   <p class="foot">
-    Код: <a href="https://github.com/sergeyakula/dih" target="_blank" rel="noopener">github.com/sergeyakula/dih</a> · ethers.js v6 · балансы читаются напрямую из блокчейна.
+    Source: <a href="https://github.com/sergeyakula/dih" target="_blank" rel="noopener">github.com/sergeyakula/dih</a> · ethers.js v6 · balances are read directly from the blockchain.
   </p>
 </div>
 

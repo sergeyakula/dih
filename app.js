@@ -8,8 +8,8 @@
     explorer: "https://sepolia.etherscan.io",
     lecturer: "0x5f3046bD5aA3c6d4575AF09B8198d584f130708E",
     tokens: [
-      { address: "0x05DB1441d06eC94E89d43ee834B216986a476c7B", note: "Наш токен" },
-      { address: "0x991C9ad3c61281714b16F3713Cf8def01b3133cE", note: "Токен одногруппника" }
+      { address: "0x05DB1441d06eC94E89d43ee834B216986a476c7B", note: "Our token" },
+      { address: "0x991C9ad3c61281714b16F3713Cf8def01b3133cE", note: "Classmate's token" }
     ]
   };
 
@@ -47,9 +47,9 @@
   function fmt(raw, decimals) {
     var s = ethers.formatUnits(raw, decimals);           // "1234.5" / "1000000.0"
     var parts = s.split(".");
-    var whole = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    var whole = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     var frac = (parts[1] || "").replace(/0+$/, "").slice(0, 6);
-    return frac ? whole + "," + frac : whole;
+    return frac ? whole + "." + frac : whole;
   }
   function isRejected(e) {
     return e && (e.code === "ACTION_REJECTED" || e.code === 4001 ||
@@ -57,9 +57,9 @@
       /user (rejected|denied)/i.test(e.message || ""));
   }
   function errText(e) {
-    if (isRejected(e)) return "Транзакция отменена в кошельке. Токены не отправлены.";
+    if (isRejected(e)) return "Transaction cancelled in the wallet. No tokens were sent.";
     var m = (e && (e.shortMessage || e.reason || e.message)) || String(e);
-    if (/insufficient funds/i.test(m)) return "Не хватает SepoliaETH на комиссию (газ). Пополните кошелёк через кран.";
+    if (/insufficient funds/i.test(m)) return "Not enough SepoliaETH to pay for gas. Top up your wallet from a faucet.";
     return m.slice(0, 280);
   }
 
@@ -78,8 +78,8 @@
     ul.innerHTML = "";
     items.forEach(function (it) {
       var li = document.createElement("li");
-      var st = it.status === "ok" ? "<span class='st-ok'>подтверждено</span>" :
-               it.status === "fail" ? "<span class='st-err'>ошибка</span>" : "ожидает подтверждения";
+      var st = it.status === "ok" ? "<span class='st-ok'>confirmed</span>" :
+               it.status === "fail" ? "<span class='st-err'>failed</span>" : "pending";
       li.innerHTML = "<span>" + esc(it.label) + " · " + st + "</span>" + txLink(it.hash, CONFIG.explorer.replace("https://", "") + "/tx/" + it.hash);
       ul.appendChild(li);
     });
@@ -98,12 +98,12 @@
         "<div class='sym'>" + esc(t.symbol || "…") + "</div>" +
         "<div class='name'>" + esc(t.name || t.note) + (t.name ? " · " + esc(t.note) : "") + "</div>" +
         "<div class='bal'>" + bal + "</div>" +
-        "<div class='meta'>Общий выпуск: " + supply + " · decimals: " + (t.decimals != null ? t.decimals : "—") + "</div>" +
+        "<div class='meta'>Total supply: " + supply + " · decimals: " + (t.decimals != null ? t.decimals : "—") + "</div>" +
         "<div class='addr'>" + esc(t.address) + "</div>" +
         (t.error ? "<div class='msg err'>" + esc(t.error) + "</div>" : "") +
         "<div class='actions'>" +
           "<a href='" + CONFIG.explorer + "/token/" + t.address + "' target='_blank' rel='noopener'>Etherscan ↗</a>" +
-          (t.symbol ? "<button type='button' class='secondary small' data-watch='" + t.address + "'>Добавить в MetaMask</button>" : "") +
+          (t.symbol ? "<button type='button' class='secondary small' data-watch='" + t.address + "'>Add to MetaMask</button>" : "") +
         "</div>";
       box.appendChild(d);
     });
@@ -138,7 +138,7 @@
 
   function updateSendButton() {
     $("sendBtn").disabled = busy || !account || !onSepolia;
-    $("sendBtn").textContent = busy ? "Отправка…" : "Отправить";
+    $("sendBtn").textContent = busy ? "Sending…" : "Send";
   }
 
   // ---------- chain / wallet ----------
@@ -150,7 +150,7 @@
 
     $("walletCard").hidden = false;
     $("acct").textContent = account;
-    $("chain").textContent = onSepolia ? "Sepolia ✓" : "Не та сеть (chain ID " + net.chainId + ")";
+    $("chain").textContent = onSepolia ? "Sepolia ✓" : "Wrong network (chain ID " + net.chainId + ")";
     $("switchBtn").hidden = onSepolia;
     $("connectBtn").textContent = short(account);
     $("connectBtn").className = "secondary";
@@ -158,7 +158,7 @@
 
     if (!onSepolia) {
       $("ethBal").textContent = "—";
-      show("walletMsg", "err", "Кошелёк подключён к другой сети. Переводы заблокированы, пока вы не переключитесь на Ethereum Sepolia.");
+      show("walletMsg", "err", "Your wallet is on a different network. Transfers are blocked until you switch to Ethereum Sepolia.");
       tokens.forEach(function (t) { t.balance = null; t.error = null; });
       renderTokens();
       return;
@@ -179,13 +179,13 @@
       var vals = await Promise.all([c.balanceOf(account), c.totalSupply()]);
       t.balance = vals[0]; t.supply = vals[1]; t.error = null;
     } catch (e) {
-      t.error = "Не удалось прочитать контракт: " + errText(e);
+      t.error = "Could not read the contract: " + errText(e);
     }
   }
 
   async function connect() {
     if (!window.ethereum) {
-      show("walletMsg", "err", "Кошелёк не найден. Установите MetaMask или откройте эту страницу во встроенном браузере MetaMask.");
+      show("walletMsg", "err", "No wallet found. Install MetaMask or open this page in the MetaMask in-app browser.");
       return;
     }
     try {
@@ -193,7 +193,7 @@
       account = ethers.getAddress(accs[0]);
       await refreshAll();
     } catch (e) {
-      show("walletMsg", "err", isRejected(e) ? "Подключение отменено в кошельке." : errText(e));
+      show("walletMsg", "err", isRejected(e) ? "Connection cancelled in the wallet." : errText(e));
     }
   }
 
@@ -201,7 +201,7 @@
     try {
       await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CONFIG.chainHex }] });
     } catch (e) {
-      show("walletMsg", "err", "Не удалось переключить сеть: " + errText(e));
+      show("walletMsg", "err", "Could not switch network: " + errText(e));
     }
   }
 
@@ -222,28 +222,28 @@
     var amountStr = $("amount").value.trim().replace(",", ".");
 
     // 1. validate everything BEFORE asking the wallet
-    if (!account) { show("sendMsg", "err", "Сначала подключите кошелёк."); return; }
-    if (!ethers.isAddress(to)) { show("sendMsg", "err", "Неверный адрес получателя. Нужен адрес вида 0x и 40 шестнадцатеричных символов."); return; }
-    if (to.toLowerCase() === ethers.ZeroAddress) { show("sendMsg", "err", "Нулевой адрес не принадлежит никому, токены сгорят. Укажите другой адрес."); return; }
-    if (to.toLowerCase() === account.toLowerCase()) { show("sendMsg", "err", "Это ваш собственный адрес. Укажите кошелёк другого участника."); return; }
-    if (t.decimals == null || t.balance == null) { show("sendMsg", "err", "Баланс токена ещё не загружен. Обновите страницу."); return; }
+    if (!account) { show("sendMsg", "err", "Connect your wallet first."); return; }
+    if (!ethers.isAddress(to)) { show("sendMsg", "err", "Invalid recipient address. It must be 0x followed by 40 hexadecimal characters."); return; }
+    if (to.toLowerCase() === ethers.ZeroAddress) { show("sendMsg", "err", "The zero address belongs to no one and the tokens would be burned. Enter another address."); return; }
+    if (to.toLowerCase() === account.toLowerCase()) { show("sendMsg", "err", "That is your own address. Enter another participant's wallet."); return; }
+    if (t.decimals == null || t.balance == null) { show("sendMsg", "err", "The token balance has not loaded yet. Reload the page."); return; }
     var amount;
     try { amount = ethers.parseUnits(amountStr, t.decimals); }
-    catch (e) { show("sendMsg", "err", "Неверное количество. Введите число, например 1 или 0.5 (не больше " + t.decimals + " знаков после точки)."); return; }
-    if (amount <= 0n) { show("sendMsg", "err", "Количество должно быть больше нуля."); return; }
-    if (amount > t.balance) { show("sendMsg", "err", "Недостаточно " + esc(t.symbol) + ": на балансе " + fmt(t.balance, t.decimals) + ", а вы пытаетесь отправить " + fmt(amount, t.decimals) + "."); return; }
+    catch (e) { show("sendMsg", "err", "Invalid amount. Enter a number such as 1 or 0.5 (at most " + t.decimals + " decimal places)."); return; }
+    if (amount <= 0n) { show("sendMsg", "err", "Amount must be greater than zero."); return; }
+    if (amount > t.balance) { show("sendMsg", "err", "Insufficient " + esc(t.symbol) + " balance: you have " + fmt(t.balance, t.decimals) + " but are trying to send " + fmt(amount, t.decimals) + "."); return; }
 
     // 2. re-check the network right before sending
     provider = new ethers.BrowserProvider(window.ethereum);
     var net = await provider.getNetwork();
     if (net.chainId !== CONFIG.chainId) {
       onSepolia = false; updateSendButton();
-      show("sendMsg", "err", "Кошелёк не в сети Sepolia. Перевод заблокирован — переключите сеть и попробуйте снова.");
+      show("sendMsg", "err", "Your wallet is not on Sepolia. The transfer is blocked: switch networks and try again.");
       return;
     }
 
     busy = true; updateSendButton();
-    show("sendMsg", "info", "Подтвердите перевод " + fmt(amount, t.decimals) + " " + esc(t.symbol) + " → " + short(to) + " в кошельке…");
+    show("sendMsg", "info", "Confirm sending " + fmt(amount, t.decimals) + " " + esc(t.symbol) + " → " + short(to) + " in your wallet…");
     var hash = null;
     try {
       var signer = await provider.getSigner();
@@ -251,11 +251,11 @@
       var tx = await c.transfer(to, amount);
       hash = tx.hash;
       addLog({ label: fmt(amount, t.decimals) + " " + t.symbol + " → " + short(to), hash: hash, status: "pending" });
-      show("sendMsg", "info", "Транзакция отправлена, ждём подтверждения блока (обычно 10–30 секунд). " + txLink(hash, "Смотреть ↗"));
+      show("sendMsg", "info", "Transaction sent, waiting for a block confirmation (usually 10–30 seconds). " + txLink(hash, "View ↗"));
       var receipt = await tx.wait();
-      if (!receipt || receipt.status !== 1) throw new Error("Транзакция не прошла (status 0).");
+      if (!receipt || receipt.status !== 1) throw new Error("Transaction failed (status 0).");
       updateLog(hash, "ok");
-      show("sendMsg", "ok", "Готово: " + fmt(amount, t.decimals) + " " + esc(t.symbol) + " отправлено на " + short(to) + ". " + txLink(hash));
+      show("sendMsg", "ok", "Done: " + fmt(amount, t.decimals) + " " + esc(t.symbol) + " sent to " + short(to) + ". " + txLink(hash));
       $("amount").value = "";
       await refreshAll();
     } catch (e) {
