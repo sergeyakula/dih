@@ -8,7 +8,7 @@
     explorer: "https://sepolia.etherscan.io",
     lecturer: "0x5f3046bD5aA3c6d4575AF09B8198d584f130708E",
     tokens: [
-      { address: "0x05DB1441d06eC94E89d43ee834B216986a476c7B", note: "Our token" },
+      { address: "0x05DB1441d06eC94E89d43ee834B216986a476c7B", note: "My token" },
       { address: "0x991C9ad3c61281714b16F3713Cf8def01b3133cE", note: "Classmate's token" }
     ]
   };

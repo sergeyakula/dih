@@ -1,6 +1,6 @@
 # DIH Token Dashboard
 
-Coursework for "Create & Transfer Your Tokens" (Group 3, Blockchain Lab). **Ethereum Sepolia testnet only** (chain ID 11155111); the tokens have no real monetary value.
+Individual coursework for "Create & Transfer Your Tokens" (Group 3 assignment, Blockchain Lab), completed by sergeyakula. **Ethereum Sepolia testnet only** (chain ID 11155111); the tokens have no real monetary value.
 
 **Live dashboard:** https://sergeyakula.github.io/dih/
 
@@ -11,7 +11,7 @@ The dashboard connects to MetaMask, shows the wallet address and the balances of
 | | Token A | Token B |
 | --- | --- | --- |
 | Name / symbol | DIH Coin / **DIH** | Deeznats / **DN** |
-| Owner | ours (sergeyakula) | a classmate's |
+| Owner | mine (sergeyakula) | a classmate's |
 | Contract | [`0x05DB1441d06eC94E89d43ee834B216986a476c7B`](https://sepolia.etherscan.io/token/0x05DB1441d06eC94E89d43ee834B216986a476c7B) | [`0x991C9ad3c61281714b16F3713Cf8def01b3133cE`](https://sepolia.etherscan.io/token/0x991C9ad3c61281714b16F3713Cf8def01b3133cE) |
 | Decimals | 18 | 18 |
 | Total supply | 1,000,000 DIH (fixed) | 100,000 DN |
