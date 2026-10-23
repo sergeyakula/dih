@@ -95,8 +95,8 @@
       var bal = (t.balance != null && t.decimals != null) ? fmt(t.balance, t.decimals) : "—";
       var supply = (t.supply != null && t.decimals != null) ? fmt(t.supply, t.decimals) : "—";
       d.innerHTML =
-        "<div class='sym'>" + esc(t.symbol || "…") + "</div>" +
-        "<div class='name'>" + esc(t.name || t.note) + (t.name ? " · " + esc(t.note) : "") + "</div>" +
+        "<div class='top'><span class='sym'>" + esc(t.symbol || "…") + "</span><span class='tag'>" + esc(t.note) + "</span></div>" +
+        "<div class='name'>" + esc(t.name || "Loading…") + "</div>" +
         "<div class='bal'>" + bal + "</div>" +
         "<div class='meta'>Total supply: " + supply + " · decimals: " + (t.decimals != null ? t.decimals : "—") + "</div>" +
         "<div class='addr'>" + esc(t.address) + "</div>" +
